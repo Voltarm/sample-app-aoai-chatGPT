@@ -69,14 +69,16 @@ def check_if_search_service_exists(search_service_name: str,
     if credential is None:
         raise ValueError("credential cannot be None")
     url = (
-        f"https://management.azure.com/subscriptions/{subscription_id}"
+        # f"https://management.azure.com/subscriptions/{subscription_id}"
+        f"https://management.usgovcloudapi.net/subscriptions/{subscription_id}"
         f"/resourceGroups/{resource_group}/providers/Microsoft.Search/searchServices"
         f"/{search_service_name}?api-version=2021-04-01-preview"
     )
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {credential.get_token('https://management.azure.com/.default').token}",
+        # "Authorization": f"Bearer {credential.get_token('https://management.azure.com/.default').token}",
+        "Authorization": f"Bearer {credential.get_token('https://management.usgovcloudapi.net/.default').token}",
     }
 
     response = requests.get(url, headers=headers)
@@ -106,7 +108,8 @@ def create_search_service(
     if credential is None:
         raise ValueError("credential cannot be None")
     url = (
-        f"https://management.azure.com/subscriptions/{subscription_id}"
+        # f"https://management.azure.com/subscriptions/{subscription_id}"
+        f"https://management.usgovcloudapi.net/subscriptions/{subscription_id}"
         f"/resourceGroups/{resource_group}/providers/Microsoft.Search/searchServices"
         f"/{search_service_name}?api-version=2021-04-01-preview"
     )
@@ -124,7 +127,8 @@ def create_search_service(
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {credential.get_token('https://management.azure.com/.default').token}",
+        # "Authorization": f"Bearer {credential.get_token('https://management.azure.com/.default').token}",
+        "Authorization": f"Bearer {credential.get_token('https://management.usgovcloudapi.net/.default').token}",
     }
 
     response = requests.put(url, json=payload, headers=headers)
@@ -155,7 +159,8 @@ def create_or_update_search_index(
             ).stdout
         )["primaryKey"]
 
-    url = f"https://{service_name}.search.windows.net/indexes/{index_name}?api-version=2023-07-01-Preview"
+    # url = f"https://{service_name}.search.windows.net/indexes/{index_name}?api-version=2023-07-01-Preview"
+    url = f"https://{service_name}.search.windows.us/indexes/{index_name}?api-version=2023-07-01-Preview"
     headers = {
         "Content-Type": "application/json",
         "api-key": admin_key,
@@ -269,7 +274,8 @@ def upload_documents_to_index(service_name, subscription_id, resource_group, ind
         to_upload_dicts.append(d)
         id += 1
     
-    endpoint = "https://{}.search.windows.net/".format(service_name)
+    # endpoint = "https://{}.search.windows.net/".format(service_name)
+    endpoint = "https://{}.search.windows.us/".format(service_name)
     if not admin_key:
         admin_key = json.loads(
             subprocess.run(
@@ -313,7 +319,8 @@ def validate_index(service_name, subscription_id, resource_group, index_name):
         "Content-Type": "application/json", 
         "api-key": admin_key}
     params = {"api-version": api_version}
-    url = f"https://{service_name}.search.windows.net/indexes/{index_name}/stats"
+    # url = f"https://{service_name}.search.windows.net/indexes/{index_name}/stats"
+    url = f"https://{service_name}.search.windows.us/indexes/{index_name}/stats"
     for retry_count in range(5):
         response = requests.get(url, headers=headers, params=params)
 
@@ -435,10 +442,12 @@ if __name__ == "__main__":
 
     print("Data preparation script started")
     if args.form_rec_resource and args.form_rec_key:
-        os.environ["FORM_RECOGNIZER_ENDPOINT"] = f"https://{args.form_rec_resource}.cognitiveservices.azure.com/"
+        # os.environ["FORM_RECOGNIZER_ENDPOINT"] = f"https://{args.form_rec_resource}.cognitiveservices.azure.com/"
+        os.environ["FORM_RECOGNIZER_ENDPOINT"] = f"https://{args.form_rec_resource}.cognitiveservices.azure.us/"
         os.environ["FORM_RECOGNIZER_KEY"] = args.form_rec_key
         if args.njobs==1:
-            form_recognizer_client = DocumentAnalysisClient(endpoint=f"https://{args.form_rec_resource}.cognitiveservices.azure.com/", credential=AzureKeyCredential(args.form_rec_key))
+            # form_recognizer_client = DocumentAnalysisClient(endpoint=f"https://{args.form_rec_resource}.cognitiveservices.azure.com/", credential=AzureKeyCredential(args.form_rec_key))
+            form_recognizer_client = DocumentAnalysisClient(endpoint=f"https://{args.form_rec_resource}.cognitiveservices.azure.us/", credential=AzureKeyCredential(args.form_rec_key))
         print(f"Using Form Recognizer resource {args.form_rec_resource} for PDF cracking, with the {'Layout' if args.form_rec_use_layout else 'Read'} model.")
 
     for index_config in config:

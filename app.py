@@ -172,7 +172,8 @@ def prepare_body_headers_with_data(request):
             {
                 "type": "AzureCognitiveSearch",
                 "parameters": {
-                    "endpoint": f"https://{AZURE_SEARCH_SERVICE}.search.windows.net",
+                    # "endpoint": f"https://{AZURE_SEARCH_SERVICE}.search.windows.net",
+                    "endpoint": f"https://{AZURE_SEARCH_SERVICE}.search.windows.us",
                     "key": AZURE_SEARCH_KEY,
                     "indexName": AZURE_SEARCH_INDEX,
                     "fieldsMapping": {

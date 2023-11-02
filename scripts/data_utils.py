@@ -625,7 +625,8 @@ def get_embedding(text, embedding_model_endpoint=None, embedding_model_key=None,
         openai.api_base = base_url
 
         if azure_credential is not None:
-            openai.api_key = azure_credential.get_token("https://cognitiveservices.azure.com/.default").token
+            # openai.api_key = azure_credential.get_token("https://cognitiveservices.azure.com/.default").token
+            openai.api_key = azure_credential.get_token("https://cognitiveservices.azure.us/.default").token
             openai.api_type = "azure_ad"
         else:
             openai.api_type = 'azure'
